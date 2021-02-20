@@ -30,6 +30,11 @@ function paintToCanvas() {
     //2-3. Start at top left of canvas
     //4-5. Draw to the width and the height
     ctx.drawImage(video, 0, 0, width, height);
+    let pixels = ctx.getImageData(0, 0, width, height);
+    //remove pixels, edit them
+    pixels = redEffect(pixels);
+    //replace pixels
+    ctx.putImageData(pixels, 0, 0);
   }, 16);
 }
 
@@ -44,6 +49,19 @@ function takePhoto() {
   link.innerHTML = `<img src="${data}" alt="Handsome Man" />`;
   strip.insertBefore(link, strip.firstChild);
   console.log(data);
+}
+
+function redEffect(pixels) {
+  //for each image there are 4 entries into a special large number array.
+  //the sequence goes red, green, blue, alpha and then repeats.
+  //looping over all the pixels at an increment of 4 grabs this sequence.
+  //Knowing this, we can target red by grabbing i at 0, green at 1, and blue at 2
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    pixels.data[i + 0] = pixels.data[i + 0] + 100; //red
+    pixels.data[i + 1] = pixels.data[i + 2] - 60; //green
+    pixels.data[i + 2] = pixels.data[i + 2] * 0.5; //blue
+  }
+  return pixels;
 }
 
 getVideo();
