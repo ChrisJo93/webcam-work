@@ -30,10 +30,14 @@ function paintToCanvas() {
     //2-3. Start at top left of canvas
     //4-5. Draw to the width and the height
     ctx.drawImage(video, 0, 0, width, height);
-    let pixels = ctx.getImageData(0, 0, width, height);
     //remove pixels, edit them
-    pixels = redEffect(pixels);
+    let pixels = ctx.getImageData(0, 0, width, height);
+
     //replace pixels
+    // pixels = redEffect(pixels);
+
+    pixels = rgbSplit(pixels);
+
     ctx.putImageData(pixels, 0, 0);
   }, 16);
 }
@@ -58,8 +62,17 @@ function redEffect(pixels) {
   //Knowing this, we can target red by grabbing i at 0, green at 1, and blue at 2
   for (let i = 0; i < pixels.data.length; i += 4) {
     pixels.data[i + 0] = pixels.data[i + 0] + 100; //red
-    pixels.data[i + 1] = pixels.data[i + 2] - 60; //green
+    pixels.data[i + 1] = pixels.data[i + 1] - 60; //green
     pixels.data[i + 2] = pixels.data[i + 2] * 0.5; //blue
+  }
+  return pixels;
+}
+
+function rgbSplit(pixels) {
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    pixels.data[i - 150] = pixels.data[i + 0] + 100; //red
+    pixels.data[i + 100] = pixels.data[i + 1] - 60; //green
+    pixels.data[i - 150] = pixels.data[i + 2] * 0.5; //blue
   }
   return pixels;
 }
